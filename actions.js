@@ -22,6 +22,26 @@ const actions = {
     }
   },
 
+  // TODO: fix
+  addDepartment: async newDepartment => {
+    try {
+      const query = `
+        INSERT INTO department (name)
+          VALUES  ("${newDepartment}")
+      `;
+      const data = await connection.promise().query(query);
+      data ? console.log(`Added ${newDepartment} to the database`) : console.log(`Something went wrong. Please try again.`);
+    } catch (error) {
+      console.log(error);
+    }
+  },
+
+  // TODO:
+  updateDepartment: async () => {},
+
+  // TODO:
+  deleteDepartment: async () => {},
+
   viewAllRoles: async () => {
     try {
       const query = `
@@ -36,6 +56,26 @@ const actions = {
       console.log(error);
     }
   },
+
+  // TODO: fix
+  addRole: async ({ role, salary, department }) => {
+    try {
+      const query = `
+        INSERT INTO role (title, salary, department_id)
+          VALUES  ("${role}", ${salary}, ${department})
+      `;
+      const data = await connection.promise().query(query);
+      data ? console.log(`Added ${role} to the database`) : console.log(`Something went wrong. Please try again.`);
+    } catch (error) {
+      console.log(error);
+    }
+  },
+
+  // TODO:
+  updateRole: async () => {},
+
+  // TODO:
+  deleteRole: async () => {},
 
   viewAllEmployees: async () => {
     try {
@@ -56,32 +96,7 @@ const actions = {
     }
   },
 
-  addDepartment: async newDepartment => {
-    try {
-      const query = `
-        INSERT INTO department (name)
-          VALUES  ("${newDepartment}")
-      `;
-      const data = await connection.promise().query(query);
-      data ? console.log(`Added ${newDepartment} to the database`) : console.log(`Something went wrong. Please try again.`);
-    } catch (error) {
-      console.log(error);
-    }
-  },
-
-  addRole: async ({ role, salary, department }) => {
-    try {
-      const query = `
-        INSERT INTO role (title, salary, department_id)
-          VALUES  ("${role}", ${salary}, ${department})
-      `;
-      const data = await connection.promise().query(query);
-      data ? console.log(`Added ${role} to the database`) : console.log(`Something went wrong. Please try again.`);
-    } catch (error) {
-      console.log(error);
-    }
-  },
-
+  // TODO: fix
   addEmployee: async ({ firstName, lastName, role, manager }) => {
     try {
       const query = `
@@ -95,6 +110,7 @@ const actions = {
     }
   },
 
+  // TODO: fix
   updateEmployeeRole: async ({ employeeId, newRoleId }) => {
     try {
       const query = `
@@ -108,6 +124,24 @@ const actions = {
       console.log(error);
     }
   },
+
+  // TODO:
+  updateEmployeeManager: async () => {},
+
+  // TODO:
+  deleteEmployee: async () => {},
+
+  // TODO:
+  viewEmployeesByManager: async () => {},
+
+  // TODO:
+  viewEmployeesByDepartment: async () => {},
+
+  // TODO:
+  viewSingleDepartmentBudget: async () => {},
+
+  // TODO:
+  viewAllDepartmentBudgets: async () => {},
 };
 
 module.exports = actions;
