@@ -45,7 +45,41 @@ const actions = {
   },
 
   // TODO:
-  deleteDepartment: async () => {},
+  deleteDepartment: async () => {
+    try {
+      let allDepartmentsList;
+      let departmentName;
+      const question = [
+        {
+          type: `list`,
+          name: `departmentId`,
+          message: `Which department would you like to delete?`,
+          choices: async () => {
+            const choices = [{ name: `Back`, value: null }];
+            allDepartmentsList = await actions.viewAllDepartments();
+            allDepartmentsList.forEach(({ id, name }) => choices.push({ name, value: id }));
+            return choices;
+          },
+        },
+      ];
+      const { departmentId } = await inquirer.prompt(question);
+
+      if (!departmentId) return;
+
+      allDepartmentsList.forEach(({ id, name }) => {
+        if (departmentId === id) departmentName = name;
+      });
+
+      const query = `
+        DELETE FROM department
+        WHERE id = ${departmentId}
+      `;
+      const [{ affectedRows }] = await connection.promise().query(query);
+      affectedRows ? console.log(`${departmentName} was successfully deleted.`) : console.log(`Something went wrong, please try again.`);
+    } catch (error) {
+      console.log(error);
+    }
+  },
 
   viewAllRoles: async () => {
     try {
@@ -62,7 +96,6 @@ const actions = {
     }
   },
 
-  // TODO: fix
   addRole: async () => {
     try {
       const questions = [
@@ -82,11 +115,9 @@ const actions = {
           message: ({ roleName }) => `Which department does the role ${roleName} fall under?`,
           choices: async () => {
             const allDepartmentsList = await actions.viewAllDepartments();
-            const choises = [{ name: `None`, value: null }];
-            allDepartmentsList.forEach(({ id, name }) => {
-              choises.push({ name, value: id });
-            });
-            return choises;
+            const choices = [{ name: `None`, value: null }];
+            allDepartmentsList.forEach(({ id, name }) => choices.push({ name, value: id }));
+            return choices;
           },
         },
       ];
@@ -104,10 +135,20 @@ const actions = {
   },
 
   // TODO:
-  updateRoleSalary: async () => {},
+  updateRoleSalary: async () => {
+    try {
+    } catch (error) {
+      console.log(error);
+    }
+  },
 
   // TODO:
-  deleteRole: async () => {},
+  deleteRole: async () => {
+    try {
+    } catch (error) {
+      console.log(error);
+    }
+  },
 
   viewAllEmployees: async () => {
     try {
@@ -158,22 +199,52 @@ const actions = {
   },
 
   // TODO:
-  updateEmployeeManager: async () => {},
+  updateEmployeeManager: async () => {
+    try {
+    } catch (error) {
+      console.log(error);
+    }
+  },
 
   // TODO:
-  deleteEmployee: async () => {},
+  deleteEmployee: async () => {
+    try {
+    } catch (error) {
+      console.log(error);
+    }
+  },
 
   // TODO:
-  viewEmployeesByManager: async () => {},
+  viewEmployeesByManager: async () => {
+    try {
+    } catch (error) {
+      console.log(error);
+    }
+  },
 
   // TODO:
-  viewEmployeesByDepartment: async () => {},
+  viewEmployeesByDepartment: async () => {
+    try {
+    } catch (error) {
+      console.log(error);
+    }
+  },
 
   // TODO:
-  viewSingleDepartmentBudget: async () => {},
+  viewSingleDepartmentBudget: async () => {
+    try {
+    } catch (error) {
+      console.log(error);
+    }
+  },
 
   // TODO:
-  viewAllDepartmentBudgets: async () => {},
+  viewAllDepartmentBudgets: async () => {
+    try {
+    } catch (error) {
+      console.log(error);
+    }
+  },
 };
 
 module.exports = actions;
