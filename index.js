@@ -21,7 +21,7 @@ const init = async () => {
           // `Update An Employee's Role`,
           // `Update An Employee's Manager`,
           // `Delete An Employee`,
-          `View Employees By Manager`,
+          // `View Employees By Manager`,
           `View Employees By Department`,
           `View A Single Department's Budget`,
           `View All Department Budgets`,

@@ -386,7 +386,6 @@ const actions = {
     return data;
   },
 
-  // TODO:
   viewEmployeesByManager: async () => {
     try {
       const question = [
@@ -423,9 +422,37 @@ const actions = {
     }
   },
 
-  // TODO:
   viewEmployeesByDepartment: async () => {
     try {
+      const question = [
+        {
+          type: `list`,
+          name: `department`,
+          message: `For which department would you like to view the employees?`,
+          choices: async () => {
+            const choices = [{ name: `Back`, value: null }];
+            const departmentList = await actions.viewAllDepartments();
+            departmentList.forEach(({ id, name }) => choices.push({ name, value: { id, name } }));
+            return choices;
+          },
+        },
+      ];
+      const { department } = await inquirer.prompt(question);
+      if (!department) return;
+
+      const query = `
+      SELECT a.id, a.first_name, a.last_name, role.title, department.name AS department, salary, CONCAT_WS(' ', b.first_name, b.last_name) AS manager
+      FROM employee a
+      LEFT JOIN employee b
+      ON a.manager_id = b.id
+      LEFT JOIN role
+      ON a.role_id = role.id
+      LEFT JOIN department
+      ON role.department_id = department.id
+      WHERE role.department_id = ${department.id}
+      `;
+      const [data] = await connection.promise().query(query);
+      return data[0] ? data : { message: `No employees work in this department.` };
     } catch (error) {
       console.log(error);
     }
