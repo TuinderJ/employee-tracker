@@ -17,13 +17,12 @@ const actions = {
         FROM department
       `;
       const data = await connection.promise().query(query);
-      console.table(data[0]);
+      return data[0];
     } catch (error) {
       console.log(error);
     }
   },
 
-  // TODO: fix
   addDepartment: async () => {
     try {
       const question = [
@@ -46,9 +45,6 @@ const actions = {
   },
 
   // TODO:
-  updateDepartment: async () => {},
-
-  // TODO:
   deleteDepartment: async () => {},
 
   viewAllRoles: async () => {
@@ -60,28 +56,55 @@ const actions = {
         ON department_id = department.id
       `;
       const data = await connection.promise().query(query);
-      console.table(data[0]);
+      return data[0];
     } catch (error) {
       console.log(error);
     }
   },
 
   // TODO: fix
-  addRole: async ({ role, salary, department }) => {
+  addRole: async () => {
     try {
+      const questions = [
+        {
+          type: `input`,
+          name: `roleName`,
+          message: `What's the name of the new role?`,
+        },
+        {
+          type: `input`,
+          name: `salary`,
+          message: ({ roleName }) => `What is the salary for ${roleName}?`,
+        },
+        {
+          type: `list`,
+          name: `departmentId`,
+          message: ({ roleName }) => `Which department does the role ${roleName} fall under?`,
+          choices: async () => {
+            const allDepartmentsList = await actions.viewAllDepartments();
+            const choises = [{ name: `None`, value: null }];
+            allDepartmentsList.forEach(({ id, name }) => {
+              choises.push({ name, value: id });
+            });
+            return choises;
+          },
+        },
+      ];
+      const { roleName, salary, departmentId } = await inquirer.prompt(questions);
+
       const query = `
         INSERT INTO role (title, salary, department_id)
-          VALUES  ("${role}", ${salary}, ${department})
+          VALUES  ("${roleName}", ${salary}, ${departmentId})
       `;
       const data = await connection.promise().query(query);
-      data ? console.log(`Added ${role} to the database`) : console.log(`Something went wrong. Please try again.`);
+      data ? console.log(`Added ${roleName} to the database`) : console.log(`Something went wrong. Please try again.`);
     } catch (error) {
       console.log(error);
     }
   },
 
   // TODO:
-  updateRole: async () => {},
+  updateRoleSalary: async () => {},
 
   // TODO:
   deleteRole: async () => {},
@@ -99,7 +122,7 @@ const actions = {
         ON role.department_id = department.id
       `;
       const data = await connection.promise().query(query);
-      console.table(data[0]);
+      return data[0];
     } catch (error) {
       console.log(error);
     }
