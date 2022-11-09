@@ -9,9 +9,9 @@ const init = async () => {
         name: `action`,
         message: `What would you like to do?`,
         choices: [
-          `View All Departments`,
-          `Add A Department`,
-          `Delete A Department`,
+          // `View All Departments`,
+          // `Add A Department`,
+          // `Delete A Department`,
           `View All Roles`,
           `Add A Role`,
           `Update a Role Salary`,

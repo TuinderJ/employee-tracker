@@ -44,38 +44,30 @@ const actions = {
     }
   },
 
-  // TODO:
   deleteDepartment: async () => {
     try {
-      let allDepartmentsList;
-      let departmentName;
       const question = [
         {
           type: `list`,
-          name: `departmentId`,
+          name: `department`,
           message: `Which department would you like to delete?`,
           choices: async () => {
             const choices = [{ name: `Back`, value: null }];
-            allDepartmentsList = await actions.viewAllDepartments();
-            allDepartmentsList.forEach(({ id, name }) => choices.push({ name, value: id }));
+            const allDepartmentsList = await actions.viewAllDepartments();
+            allDepartmentsList.forEach(({ id, name }) => choices.push({ name, value: { id, name } }));
             return choices;
           },
         },
       ];
-      const { departmentId } = await inquirer.prompt(question);
-
-      if (!departmentId) return;
-
-      allDepartmentsList.forEach(({ id, name }) => {
-        if (departmentId === id) departmentName = name;
-      });
+      const { department } = await inquirer.prompt(question);
+      if (!department) return;
 
       const query = `
         DELETE FROM department
-        WHERE id = ${departmentId}
+        WHERE id = ${department.id}
       `;
       const [{ affectedRows }] = await connection.promise().query(query);
-      affectedRows ? console.log(`${departmentName} was successfully deleted.`) : console.log(`Something went wrong, please try again.`);
+      affectedRows ? console.log(`${department.name} was successfully deleted.`) : console.log(`Something went wrong, please try again.`);
     } catch (error) {
       console.log(error);
     }
@@ -137,6 +129,36 @@ const actions = {
   // TODO:
   updateRoleSalary: async () => {
     try {
+      const questions = [
+        {
+          type: `list`,
+          name: `role`,
+          message: `Which role's salary would you like to update`,
+          choices: async () => {
+            const choices = [{ name: `Back`, value: null }];
+            const rolesList = await actions.viewAllRoles();
+            rolesList.forEach(({ id, title }) => choices.push({ name: title, value: { id, title } }));
+            return choices;
+          },
+        },
+        {
+          type: `input`,
+          name: `newSalary`,
+          message: ({ role }) => `What would you like the salary for ${role.title}`,
+          when: ({ role }) => role,
+        },
+      ];
+      const { role, newSalary } = await inquirer.prompt(questions);
+      if (!role) return;
+
+      const query = `
+        UPDATE role
+        SET salary = ${newSalary}
+        WHERE id = ${role.id}
+      `;
+
+      const [{ affectedRows }] = await connection.promise().query(query);
+      affectedRows ? console.log(`${role.title} has been succesfully updated.`) : console.log(`Something went wrong, please try again.`);
     } catch (error) {
       console.log(error);
     }
