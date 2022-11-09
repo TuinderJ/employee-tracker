@@ -16,8 +16,8 @@ const actions = {
         SELECT *
         FROM department
       `;
-      const data = await connection.promise().query(query);
-      return data[0];
+      const [data] = await connection.promise().query(query);
+      return data;
     } catch (error) {
       console.log(error);
     }
@@ -81,8 +81,8 @@ const actions = {
         LEFT JOIN department
         ON department_id = department.id
       `;
-      const data = await connection.promise().query(query);
-      return data[0];
+      const [data] = await connection.promise().query(query);
+      return data;
     } catch (error) {
       console.log(error);
     }
@@ -204,19 +204,54 @@ const actions = {
         LEFT JOIN department
         ON role.department_id = department.id
       `;
-      const data = await connection.promise().query(query);
-      return data[0];
+      const [data] = await connection.promise().query(query);
+      return data;
     } catch (error) {
       console.log(error);
     }
   },
 
-  // TODO: fix
-  addEmployee: async ({ firstName, lastName, role, manager }) => {
+  addEmployee: async () => {
     try {
+      const questions = [
+        {
+          type: `input`,
+          name: `firstName`,
+          message: `What is the new employee's first name?`,
+        },
+        {
+          type: `input`,
+          name: `lastName`,
+          message: ({ firstName }) => `What is ${firstName}'s last name?`,
+        },
+        {
+          type: `list`,
+          name: `role`,
+          message: ({ firstName, lastName }) => `What is ${firstName} ${lastName}'s role?`,
+          choices: async () => {
+            const choices = [{ name: `None`, value: null }];
+            const rolesList = await actions.viewAllRoles();
+            rolesList.forEach(({ id, title }) => choices.push({ name: title, value: { id, title } }));
+            return choices;
+          },
+        },
+        {
+          type: `list`,
+          name: `manager`,
+          message: ({ firstName, lastName }) => `Who is ${firstName} ${lastName}'s manager?`,
+          choices: async () => {
+            const choices = [{ name: `None`, value: null }];
+            const employeeList = await actions.viewAllEmployees();
+            employeeList.forEach(({ id, first_name, last_name }) => choices.push({ name: `${first_name} ${last_name}`, value: { id } }));
+            return choices;
+          },
+        },
+      ];
+      const { firstName, lastName, role, manager } = await inquirer.prompt(questions);
+
       const query = `
         INSERT INTO employee (first_name, last_name, role_id, manager_id)
-          VALUES  ("${firstName}", "${lastName}", ${role}, ${manager})
+          VALUES  ("${firstName}", "${lastName}", ${role?.id || null}, ${manager?.id || null})
       `;
       const data = await connection.promise().query(query);
       data ? console.log(`Added ${firstName} ${lastName} to the database`) : console.log(`Something went wrong. Please try again.`);
@@ -233,8 +268,8 @@ const actions = {
         SET role_id = ${newRoleId}
         WHERE id = ${employeeId}
       `;
-      const data = await connection.promise().query(query);
-      data[0].affectedRows ? console.log(`Updated employee's role`) : console.log(`Something went wrong. Please try again.`);
+      const [{ affectedRows }] = await connection.promise().query(query);
+      affectedRows ? console.log(`Updated employee's role`) : console.log(`Something went wrong. Please try again.`);
     } catch (error) {
       console.log(error);
     }
