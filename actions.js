@@ -1,5 +1,6 @@
 const mysql = require(`mysql2`);
 const cTable = require(`console.table`);
+const inquirer = require("inquirer");
 
 connection = mysql.createConnection({
   host: "localhost",
@@ -23,14 +24,22 @@ const actions = {
   },
 
   // TODO: fix
-  addDepartment: async newDepartment => {
+  addDepartment: async () => {
     try {
+      const question = [
+        {
+          type: `input`,
+          name: `newDepartmentName`,
+          message: `What is the name of the new department?`,
+        },
+      ];
+      const { newDepartmentName } = await inquirer.prompt(question);
       const query = `
         INSERT INTO department (name)
-          VALUES  ("${newDepartment}")
+          VALUES  ("${newDepartmentName}")
       `;
       const data = await connection.promise().query(query);
-      data ? console.log(`Added ${newDepartment} to the database`) : console.log(`Something went wrong. Please try again.`);
+      data ? console.log(`Added ${newDepartmentName} to the database`) : console.log(`Something went wrong. Please try again.`);
     } catch (error) {
       console.log(error);
     }
