@@ -17,9 +17,9 @@ const init = async () => {
           // `Update a Role Salary`,
           // `Delete A Role`,
           `View All Employees`,
-          `Add An Employee`,
-          `Update An Employee Role`,
-          `Update An Employee Manager`,
+          // `Add An Employee`,
+          // `Update An Employee's Role`,
+          `Update An Employee's Manager`,
           `Delete An Employee`,
           `View Employees By Manager`,
           `View Employees By Department`,
@@ -61,10 +61,10 @@ const init = async () => {
       case `Add An Employee`:
         await actions.addEmployee();
         break;
-      case `Update An Employee Role`:
+      case `Update An Employee's Role`:
         await actions.updateEmployeeRole();
         break;
-      case `Update An Employee Manager`:
+      case `Update An Employee's Manager`:
         await actions.updateEmployeeManager();
         break;
       case `Delete An Employee`:

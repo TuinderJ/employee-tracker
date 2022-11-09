@@ -301,9 +301,46 @@ const actions = {
     }
   },
 
-  // TODO:
   updateEmployeeManager: async () => {
     try {
+      const questions = [
+        {
+          type: `list`,
+          name: `employee`,
+          message: `Which employee's manager would you like to change?`,
+          choices: async () => {
+            const choices = [{ name: `Back`, value: null }];
+            const employeeList = await actions.viewAllEmployees();
+            employeeList.forEach(({ id, first_name, last_name }) => choices.push({ name: `${first_name} ${last_name}`, value: { id, first_name, last_name } }));
+            return choices;
+          },
+        },
+        {
+          type: `list`,
+          name: `manager`,
+          message: ({ employee }) => `Who is ${employee.first_name} ${employee.last_name}'s new manager?`,
+          choices: async () => {
+            const choices = [
+              { name: `Nevermind`, value: null },
+              { name: `No one`, value: 0 },
+            ];
+            const employeeList = await actions.viewAllEmployees();
+            employeeList.forEach(({ id, first_name, last_name }) => choices.push({ name: `${first_name} ${last_name}`, value: { id, first_name, last_name } }));
+            return choices;
+          },
+          when: ({ employee }) => employee,
+        },
+      ];
+      const { employee, manager } = await inquirer.prompt(questions);
+      if (!employee || manager === null) return;
+
+      const query = `
+        UPDATE employee
+        SET manager_id = ${manager.id ? manager.id : null}
+        WHERE id = ${employee.id}
+      `;
+      const [{ affectedRows }] = await connection.promise().query(query);
+      affectedRows ? console.log(`${employee.first_name} ${employee.last_name} has been sucessfully updated.`) : console.log(`Something went wrong, please try again.`);
     } catch (error) {
       console.log(error);
     }
