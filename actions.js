@@ -126,7 +126,6 @@ const actions = {
     }
   },
 
-  // TODO:
   updateRoleSalary: async () => {
     try {
       const questions = [
@@ -164,9 +163,30 @@ const actions = {
     }
   },
 
-  // TODO:
   deleteRole: async () => {
     try {
+      const question = [
+        {
+          type: `list`,
+          name: `role`,
+          message: `Which role would you like to delete?`,
+          choices: async () => {
+            const choices = [{ name: `Back`, value: null }];
+            const rolesList = await actions.viewAllRoles();
+            rolesList.forEach(({ id, title }) => choices.push({ name: title, value: { id, title } }));
+            return choices;
+          },
+        },
+      ];
+      const { role } = await inquirer.prompt(question);
+      if (!role) return;
+
+      const query = `
+        DELETE FROM role
+        WHERE id = ${role.id}
+      `;
+      const [{ affectedRows }] = await connection.promise().query(query);
+      affectedRows ? console.log(`${role.title} was deleted successfully.`) : console.log(`Something went wrong, please try again.`);
     } catch (error) {
       console.log(error);
     }
