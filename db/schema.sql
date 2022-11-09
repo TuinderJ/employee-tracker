@@ -25,3 +25,12 @@ CREATE TABLE employee (
   FOREIGN KEY(role_id) REFERENCES role(id) ON DELETE SET NULL,
   FOREIGN KEY(manager_id) REFERENCES employee(id) ON DELETE SET NULL
 );
+
+SELECT department.name, SUM(salary) AS budget
+FROM department
+JOIN role
+ON role.department_id = department.id
+JOIN employee
+ON employee.role_id = role.id
+GROUP BY department.name
+WHERE department.id = 1

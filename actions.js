@@ -458,17 +458,53 @@ const actions = {
     }
   },
 
-  // TODO:
   viewSingleDepartmentBudget: async () => {
     try {
+      const question = [
+        {
+          type: `list`,
+          name: `department`,
+          message: `Which department's budget utilization would you like to see?`,
+          choices: async () => {
+            const choices = [{ name: `Back`, value: null }];
+            const departmentList = await actions.viewAllDepartments();
+            departmentList.forEach(({ id, name }) => choices.push({ name, value: { id, name } }));
+            return choices;
+          },
+        },
+      ];
+      const { department } = await inquirer.prompt(question);
+      if (!department) return;
+
+      const query = `
+        SELECT department.name AS department, SUM(salary) AS budget
+        FROM department
+        JOIN role
+        ON role.department_id = department.id
+        JOIN employee
+        ON employee.role_id = role.id
+        WHERE department.id = ${department.id}
+    `;
+      const [data] = await connection.promise().query(query);
+      return data[0].department ? data[0] : { message: `No employees currently work in this department.` };
     } catch (error) {
       console.log(error);
     }
   },
 
-  // TODO:
   viewAllDepartmentBudgets: async () => {
     try {
+      const query = `
+        SELECT department.name AS department, SUM(salary) AS budget
+        FROM department
+        JOIN role
+        ON role.department_id = department.id
+        JOIN employee
+        ON employee.role_id = role.id
+        GROUP BY department.name
+      `;
+      const [data] = await connection.promise().query(query);
+      return data;
     } catch (error) {
       console.log(error);
     }
