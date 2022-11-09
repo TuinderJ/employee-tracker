@@ -346,9 +346,30 @@ const actions = {
     }
   },
 
-  // TODO:
   deleteEmployee: async () => {
     try {
+      const question = [
+        {
+          type: `list`,
+          name: `employee`,
+          message: `Which employee would you like to remove?`,
+          choices: async () => {
+            const choices = [{ name: `Back`, value: null }];
+            const employeeList = await actions.viewAllEmployees();
+            employeeList.forEach(({ id, first_name, last_name }) => choices.push({ name: `${first_name} ${last_name}`, value: { id, first_name, last_name } }));
+            return choices;
+          },
+        },
+      ];
+      const { employee } = await inquirer.prompt(question);
+      if (!employee) return;
+
+      const query = `
+        DELETE FROM employee
+        WHERE id = ${employee.id}
+      `;
+      const [{ affectedRows }] = await connection.promise().query(query);
+      affectedRows ? console.log(`${employee.first_name} ${employee.last_name} was successfully removed.`) : console.log(`Something went wrong, please try again.`);
     } catch (error) {
       console.log(error);
     }
