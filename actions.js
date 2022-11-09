@@ -375,9 +375,49 @@ const actions = {
     }
   },
 
+  viewAllManagers: async () => {
+    const query = `
+      SELECT DISTINCT b.id, b.first_name, b.last_name
+      FROM employee a
+      JOIN employee b
+      ON a.manager_id = b.id
+    `;
+    const [data] = await connection.promise().query(query);
+    return data;
+  },
+
   // TODO:
   viewEmployeesByManager: async () => {
     try {
+      const question = [
+        {
+          type: `list`,
+          name: `manager`,
+          message: `Who's employees would you like to see?`,
+          choices: async () => {
+            const choices = [{ name: `Back`, value: null }];
+            const managerList = await actions.viewAllManagers();
+            managerList.forEach(({ id, first_name, last_name }) => choices.push({ name: `${first_name} ${last_name}`, value: { id, first_name, last_name } }));
+            return choices;
+          },
+        },
+      ];
+      const { manager } = await inquirer.prompt(question);
+      if (!manager) return;
+
+      const query = `
+        SELECT a.id, a.first_name, a.last_name, role.title, department.name AS department, salary
+        FROM employee a
+        LEFT JOIN employee b
+        ON a.manager_id = b.id
+        LEFT JOIN role
+        ON a.role_id = role.id
+        LEFT JOIN department
+        ON role.department_id = department.id
+        WHERE a.manager_id = ${manager.id}
+      `;
+      const [data] = await connection.promise().query(query);
+      return data;
     } catch (error) {
       console.log(error);
     }

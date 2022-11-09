@@ -20,7 +20,7 @@ const init = async () => {
           // `Add An Employee`,
           // `Update An Employee's Role`,
           // `Update An Employee's Manager`,
-          `Delete An Employee`,
+          // `Delete An Employee`,
           `View Employees By Manager`,
           `View Employees By Department`,
           `View A Single Department's Budget`,
