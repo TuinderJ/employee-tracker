@@ -25,7 +25,7 @@ N/A
 
 After starting the app, navigate through the menu systems and each item will do what it says it does. If it asks you a question without providing a list to select from, type in the answer and press enter.
 
-[Walkthrough Video](assets/images/walkthrough.mp4)
+[Walkthrough Video](assets/walkthrough.mp4)
 
 ## Credits
 
